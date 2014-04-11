@@ -147,7 +147,7 @@ if raw_input("Use Default Options? ") == 'Y':
     lognorm_use = False
     median_use = False
     outlier_use = False
-    info_use = False
+    info_use = True
 else:
     if raw_input("Format for GraphPad? ") == 'Y':
         graphpad_format_use = True
@@ -314,14 +314,14 @@ if graphpad_format_use:
                 elif j % 3 == 2:
                     graphpad[i] += '%f\n' % samples_normalized[i][samples_keys[i][j]]
     #Write GraphPad-Formatted Data to File
-    file = open('%s-data.csv' % (filename.split('.')[:1][0]), 'w+')
+    file = open('%s-graphpad-data.csv' % (filename.split('.')[:1][0]), 'w+')
     for i in range(len(graphpad)):
         file.seek(0, 2)
         file.write('Plate %d\n' % (i+1))
         file.write(graphpad[i])
     file.close()
-else:
-    file = open('%s-data.csv' % (filename.split('.')[:1][0]), 'w+')
+if drug_info:
+    file = open('%s-R-data.csv' % (filename.split('.')[:1][0]), 'w+')
     file.write('Plate,Well,RFU,Normalied RFU')
 
     if info_use:
