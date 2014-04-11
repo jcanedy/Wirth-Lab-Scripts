@@ -1,3 +1,8 @@
+# CONSTANTS:
+SAMPLES_PER_ROW = 
+POS_CONTROLS_PER_ROW =
+NEG_CONTROLS_PER_ROW =  
+
 import sys
 import math
 
@@ -239,7 +244,39 @@ if not row_normal_use:
             samples_normalized[i][samples[i].keys()[j]] = normalize(samples[i][samples[i].keys()[j]], control_pos_average[i], control_neg_average[i], lognorm_use)
 #2-Row Averages (If 'Y' in Options)
 else:
-    print "You are using Row Normalization now"
+    for i in range(plates_len):
+        control_pos_average.append([])
+            # Sorted list (by well) of controls from plate i
+        control_pos_sorted = list(zip(*sorted(zip(control_pos[i].keys(), control_pos[i].values())))[1])
+        control_neg_sorted = list(zip(*sorted(zip(control_neg[i].keys(), control_neg[i].values())))[1])
+        samples_sorted_keys, samples_sorted_values = (list(l) for l in zip(*sorted(zip(samples[i].keys(), sample[i].values()))))
+        if median_use:
+            while control_pos_sorted:
+                control_pos_rows = []
+                for j in range(2*POS_CONTROLS_PER_ROW):
+                    control_pos_rows.append(control_pos_sorted.pop(0))
+                control_pos_average.[i].append(median(control_pos_rows)['median'])
+            while control_neg_sorted:
+                control_neg_rows = []
+                for j in range(2*NEG_CONTROLS_PER_ROW):
+                    control_neg_rows.append(control_neg_sorted.pop(0))
+                control_neg_average.[i].append(mean(control_neg_rows)['median'])
+        else:
+            while control_pos_sorted:
+                control_pos_rows = []
+                for j in range(2*POS_CONTROLS_PER_ROW):
+                    control_pos_rows.append(control_pos_sorted.pop(0))
+                control_pos_average.[i].append(mean(control_pos_rows, lognorm_use))
+            while control_neg_sorted:
+                control_neg_rows = []
+                for j in range(2*NEG_CONTROLS_PER_ROW):
+                    control_neg_rows.append(control_neg_sorted.pop(0))
+                control_neg_average.[i].append(mean(control_neg_rows, lognorm_use))
+        while samples_sorted_values:
+            j = 0
+            for k in range(2*SAMPLES_PER_ROW):
+                samples_normalized[i][samples_sorted_keys.pop(0)] = normalize(samples_sorted_values.pop(0), control_pos_average[i][j], control_neg_average[i][j], lognorm_use)
+                j += 1
 
 concentration = list()
 for i in range(len(info)):
