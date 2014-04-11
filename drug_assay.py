@@ -1,7 +1,13 @@
 # CONSTANTS:
-SAMPLES_PER_ROW = 
-POS_CONTROLS_PER_ROW =
-NEG_CONTROLS_PER_ROW =  
+DRUG_INFO_PATH = 'drug_info.csv'
+PLATE_LAYOUT_PATH = 'default_assay_template.csv'
+NUMBER_OF_PLATES = 23
+RANGES = [ [7,3.5,1.75,0.875,0.4375,0.21875,0.109375,0.0546875,0.02734375,0.013671875,0.006835938,0.003417969], [7,3.5,1.75,0.875,0.4375,0.21875,0.109375,0.0546875,0.02734375,0.013671875,0.006835938,0.003417969], [15,6.9659676,3.234980307,1.502317867,0.697673172,0.323997914,0.150463932,0.069875125,0.032449857,0.015069644,0.00699831,0.00325]]
+
+# If using default template, DO NOT CHANGE
+SAMPLES_PER_ROW = 18
+POS_CONTROLS_PER_ROW = 3
+NEG_CONTROLS_PER_ROW = 1 
 
 import sys
 import math
@@ -122,14 +128,12 @@ def in_list(alist):
 argc = len(sys.argv)
 
 if argc is 1:
-    print 'Command line error: No input file'
+    print 'Usage: python drug_info.py input.txt'
     sys.exit(1)
-elif argc is 2: #Only SpectraMax input (uses standard plate layout)
-    layout = load_assay_layout("default_assay_template.csv")
-    info = read_info('drug_info.csv', 23)
-elif argc is 3: #SpectraMax input and custom plate layout
-    layout = load_assay_layout("%s" % sys.argv[3])
-elif argc > 3:
+elif argc is 2: #Only SpectraMax input
+    layout = load_assay_layout(PLATE_LAYOUT_PATH)
+    info = read_info(DRUG_INFO_PATH, NUMBER_OF_PLATES)
+elif argc > 2:
     print 'Command line error: Wrong Number of Arguments'
     sys.exit(1)
 
@@ -138,8 +142,8 @@ elif argc > 3:
 #Set-up options for normalization
 print "\nSelect Y/N for the following options:"
 if raw_input("Use Default Options? ") == 'Y':
-    graphpad_format_use = False
-    row_normal_use = False
+    graphpad_format_use = True
+    row_normal_use = True
     lognorm_use = False
     median_use = False
     outlier_use = False
@@ -282,7 +286,7 @@ concentration = list()
 for i in range(len(info)):
     for j in range(len(info[i].values())):
         concentration.append(float(info[i].values()[j][0]))
-ranges = [ [7,3.5,1.75,0.875,0.4375,0.21875,0.109375,0.0546875,0.02734375,0.013671875,0.006835938,0.003417969], [7,3.5,1.75,0.875,0.4375,0.21875,0.109375,0.0546875,0.02734375,0.013671875,0.006835938,0.003417969], [15,6.9659676,3.234980307,1.502317867,0.697673172,0.323997914,0.150463932,0.069875125,0.032449857,0.015069644,0.00699831,0.00325]]
+ranges = RANGES
 concentration = in_list(concentration)
 conc_range = {}
 #ranges = range(dilutions_num)
